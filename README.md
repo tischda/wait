@@ -1,43 +1,45 @@
-﻿# gosleep [![Build status](https://ci.appveyor.com/api/projects/status/ymwk8atrb6tiig2y?svg=true)](https://ci.appveyor.com/project/tischda/gosleep)
+﻿[![Build Status](https://github.com/tischda/wait/actions/workflows/build.yml/badge.svg)](https://github.com/tischda/wait/actions/workflows/build.yml)
+[![Test Status](https://github.com/tischda/wait/actions/workflows/test.yml/badge.svg)](https://github.com/tischda/wait/actions/workflows/test.yml)
+[![Coverage Status](https://coveralls.io/repos/tischda/wait/badge.svg)](https://coveralls.io/r/tischda/wait)
+[![Linter Status](https://github.com/tischda/wait/actions/workflows/linter.yml/badge.svg)](https://github.com/tischda/wait/actions/workflows/linter.yml)
+[![License](https://img.shields.io/github/license/tischda/wait)](/LICENSE)
+[![Release](https://img.shields.io/github/release/tischda/wait.svg)](https://github.com/tischda/wait/releases/latest)
 
-Utility written in [Go](https://www.golang.org) to sleep for X seconds.
+Wait for specified duration or until key pressed.
 
-### Install
-
-There are no dependencies.
-
-~~~
-go get github.com/tischda/gosleep
-~~~
-
-### Usage
+## Install
 
 ~~~
-Usage: gosleep [options] duration (default unit = seconds)
+go install github.com/tischda/wait
+~~~
+
+## Usage
+
+~~~
+Usage: wait [OPTIONS] duration
+
+Waits for specified duration or until key pressed.
 
 OPTIONS:
-  -quiet
-    	do not print anything
-  -version
-    	print version and exit
-~~~
+  -q, --quiet
+          suppress non-error output
+  -?, --help
+          display this help message
+  -v, --version
+          print version and exit
 
-Examples:
+EXAMPLES:
 
-~~~
-$ gosleep 3s                                                                                                                                  [21:53]
-[░░░░░░░░░░] 100%
+  $ wait 3s
+    [░░░░░░░░░░] 100%
 ~~~
 
 Will sleep for 3s (see [ParseDuration](http://golang.org/pkg/time/#ParseDuration) for time formats).
 
-
-### Known issues
-
-Accuracy for actual sleeping time is not fantastic, but the delta should be under 20ms.
+Accuracy for actual duration is not great, but the delta should be under 20ms.
 
 
-### Inspiration
+## Inspiration
 
 * https://github.com/tianon/gosleep
 * https://github.com/cheggaaa/pb

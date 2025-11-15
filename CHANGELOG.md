@@ -1,17 +1,22 @@
-## Changelog
+# Changelog
 
-##### gosleep 1.3.0 - (20 March 2016)
+## [v1.4.0] - 16 November 2025
 
-    * Added progress bar
+* Renamed from `gosleep` to `wait` (to avoid confusion with power state)
+* Interrupt on key press
 
-##### gosleep 1.2.0 - (17 August 2016)
+## [v1.3.0] - 20 March 2016
 
-    * Renamed to gosleep to avoid conflicts with other tools: C:\Program Files\Git\usr\bin\sleep.exe 
+* Added progress bar
 
-##### sleep 1.1.0 - (25 July 2015)
+## [v1.2.0] - 17 August 2016
 
-    * Allow parsing time formats 
+* Renamed to `gosleep` to avoid conflicts with other tools: `C:\Program Files\Git\usr\bin\sleep.exe`
 
-##### sleep 1.0.1 - (25 July 2015)
+## [v1.1.0] - 25 July 2015
 
-    * First version
+* Allow parsing time formats 
+
+## [v1.0.1] - 25 July 2015
+
+* First version

@@ -1,5 +1,5 @@
-*.exe
+﻿*.exe
 coverage.out
 dist/
 releaseinfo
-gosleep
+resource*.syso

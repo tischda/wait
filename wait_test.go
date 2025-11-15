@@ -10,12 +10,15 @@ import (
 const DELTA_MS = 20 * time.Millisecond
 
 func TestSleep(t *testing.T) {
-	quiet = true
-	params := []string{"0.1", "0.100s", "100ms", "100000us", "100000000ns"}
+	params := []string{"0.1s", "0.100s", "100ms", "100000us", "100000000ns"}
 
 	for _, duration := range params {
 		start := time.Now()
-		sleep(duration)
+		timeDuration, err := time.ParseDuration(duration)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		wait(timeDuration, true)
 		stop := time.Now()
 
 		actual := stop.Sub(start)
