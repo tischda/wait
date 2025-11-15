@@ -2,45 +2,82 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"time"
-)
 
-// Dumb implementation of a progress bar...
-// see https://en.wikipedia.org/wiki/Block_Elements for unicode block elements
-var bar = []string{
-	"\r[\u2591         ]  10%",
-	"\r[\u2591\u2591        ]  20%",
-	"\r[\u2591\u2591\u2591       ]  30%",
-	"\r[\u2591\u2591\u2591\u2591      ]  40%",
-	"\r[\u2591\u2591\u2591\u2591\u2591     ]  50%",
-	"\r[\u2591\u2591\u2591\u2591\u2591\u2591    ]  60%",
-	"\r[\u2591\u2591\u2591\u2591\u2591\u2591\u2591   ]  70%",
-	"\r[\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591  ]  80%",
-	"\r[\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591 ]  90%",
-	"\r[\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591] 100%",
-}
+	"golang.org/x/term"
+)
 
 // number of progress bar increments
 var TICKS = len(bar)
 
+// wait until duration elapsed or a key (line) pressed
 func wait(duration time.Duration, quiet bool) {
-	if !quiet {
-		go show_progress(duration)
+	stop := make(chan struct{})
+	go watchKeypress(stop)
+
+	if quiet {
+		select {
+		case <-time.After(duration):
+			return
+		case <-stop:
+			return
+		}
 	}
-	time.Sleep(duration)
-	if !quiet {
-		// no go routine here to make sure the '100%' is printed
+
+	// progress mode
+	done := make(chan bool)
+	go show_progress(duration, stop, done)
+
+	full := <-done
+	if full {
+		// ensure final 100% with newline
 		fmt.Println(bar[TICKS-1])
+	} else {
+		// interrupted: move to next line
+		fmt.Println()
 	}
 }
 
-// prints the progress bar as time is passing by
-func show_progress(d time.Duration) {
+// prints the progress bar as time is passing by; stops early if interrupted.
+// done sends true if full duration elapsed, false if interrupted.
+func show_progress(d time.Duration, stop <-chan struct{}, done chan<- bool) {
 	interval := d / time.Duration(TICKS)
 	hide_cursor()
 	for i := 0; i < TICKS; i++ {
-		fmt.Print(bar[i])
-		time.Sleep(interval)
+		select {
+		case <-stop:
+			show_cursor()
+			done <- false
+			return
+		default:
+			fmt.Print(bar[i])
+			time.Sleep(interval)
+		}
 	}
 	show_cursor()
+	done <- true
+}
+
+// watchKeypress waits for any input by switch stdin into 'raw' mode
+// cf. https://stackoverflow.com/questions/15159118/read-a-character-from-standard-input-in-go-without-pressing-enter
+func watchKeypress(stop chan struct{}) {
+	oldState, err := term.MakeRaw(int(os.Stdin.Fd()))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer term.Restore(int(os.Stdin.Fd()), oldState)
+
+	b := make([]byte, 1)
+	_, err = os.Stdin.Read(b)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	select {
+	case <-stop: // already closed
+	default:
+		close(stop)
+	}
 }
