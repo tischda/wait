@@ -26,10 +26,8 @@ func wait(duration time.Duration, quiet bool) {
 	}
 
 	// progress mode
-	done := make(chan bool)
-	go show_progress(duration, stop, done)
+	full := show_progress(duration, stop)
 
-	full := <-done
 	if full {
 		// ensure final 100% with newline
 		fmt.Println(bar[TICKS-1])
@@ -41,22 +39,20 @@ func wait(duration time.Duration, quiet bool) {
 
 // prints the progress bar as time is passing by; stops early if interrupted.
 // done sends true if full duration elapsed, false if interrupted.
-func show_progress(d time.Duration, stop <-chan struct{}, done chan<- bool) {
+func show_progress(d time.Duration, stop <-chan struct{}) bool {
 	interval := d / time.Duration(TICKS)
 	hide_cursor()
+	defer show_cursor()
 	for i := 0; i < TICKS; i++ {
 		select {
 		case <-stop:
-			show_cursor()
-			done <- false
-			return
+			return false
 		default:
 			fmt.Print(bar[i])
 			time.Sleep(interval)
 		}
 	}
-	show_cursor()
-	done <- true
+	return true
 }
 
 // watchKeypress waits for any input by switch stdin into 'raw' mode
