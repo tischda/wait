@@ -90,6 +90,8 @@ EXAMPLES:`)
 
 	duration := parseDuration(flag.Arg(0))
 	wait(duration, cfg)
+
+	fmt.Println("coucou0")
 }
 
 // Adds "s" suffix if no time unit provided
