@@ -19,18 +19,21 @@ var (
 
 // flags
 type Config struct {
-	nobreak bool
-	quiet   bool
-	help    bool
-	version bool
+	nobreak    bool
+	noprogress bool
+	quiet      bool
+	help       bool
+	version    bool
 }
 
 func initFlags() *Config {
 	cfg := &Config{}
-	flag.BoolVar(&cfg.nobreak, "n", false, "")
+	flag.BoolVar(&cfg.nobreak, "b", false, "")
 	flag.BoolVar(&cfg.nobreak, "nobreak", false, "ignore key presses and wait specified time")
+	flag.BoolVar(&cfg.noprogress, "np", false, "")
+	flag.BoolVar(&cfg.noprogress, "noprogress", false, "do not display progress bar")
 	flag.BoolVar(&cfg.quiet, "q", false, "")
-	flag.BoolVar(&cfg.quiet, "quiet", false, "suppress non-error output")
+	flag.BoolVar(&cfg.quiet, "quiet", false, "suppress non-error output (implies --noprogress)")
 	flag.BoolVar(&cfg.help, "?", false, "")
 	flag.BoolVar(&cfg.help, "help", false, "displays this help message")
 	flag.BoolVar(&cfg.version, "v", false, "")
@@ -47,10 +50,12 @@ func main() {
 Waits for specified duration or until key pressed.
 
 OPTIONS:
-  -n, --nobreak
+  -b, --nobreak
           ignore key presses and wait specified time
+  -np, --noprogress
+          do not display progress bar
   -q, --quiet
-          suppress non-error output
+          suppress non-error output (implies --noprogress)
   -?, --help
           display this help message
   -v, --version
@@ -78,6 +83,11 @@ EXAMPLES:`)
 		flag.Usage()
 		os.Exit(1)
 	}
+
+	if cfg.quiet {
+		cfg.noprogress = true
+	}
+
 	duration := parseDuration(flag.Arg(0))
 	wait(duration, cfg)
 }

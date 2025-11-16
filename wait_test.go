@@ -12,8 +12,8 @@ const DELTA = 30 * time.Millisecond
 func TestWait(t *testing.T) {
 	params := []string{"0.1s", "0.100s", "100ms", "100000us", "100000000ns"}
 	cfg := &Config{
-		quiet:   true,
-		nobreak: false,
+		quiet:      true,
+		noprogress: true,
 	}
 
 	for _, duration := range params {
@@ -38,8 +38,7 @@ func TestWait(t *testing.T) {
 
 func TestProgress(t *testing.T) {
 	cfg := &Config{
-		quiet:   false,
-		nobreak: false,
+		quiet: false,
 	}
 	duration := "1s"
 	start := time.Now()

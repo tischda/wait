@@ -33,13 +33,15 @@ func wait(duration time.Duration, cfg *Config) {
 	stop := make(chan struct{})
 	fd := int(os.Stdin.Fd())
 	if term.IsTerminal(fd) && !cfg.nobreak {
-		fmt.Printf("Waiting for %s, press a key to continue ...\n", duration)
+		if !cfg.quiet {
+			fmt.Printf("Waiting for %s, press a key to continue ...\n", duration)
+		}
 		go watchKeypress(stop)
-	} else {
+	} else if !cfg.quiet {
 		fmt.Printf("Waiting for %s ...\n", duration)
 	}
 
-	if cfg.quiet {
+	if cfg.noprogress {
 		select {
 		case <-time.After(duration):
 			return

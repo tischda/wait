@@ -21,10 +21,12 @@ Usage: wait [OPTIONS] duration
 Waits for specified duration or until key pressed.
 
 OPTIONS:
-  -n, --nobreak
+  -b, --nobreak
           ignore key presses and wait specified time
+  -np, --noprogress
+          do not display progress bar
   -q, --quiet
-          suppress non-error output
+          suppress non-error output (implies --noprogress)
   -?, --help
           display this help message
   -v, --version
