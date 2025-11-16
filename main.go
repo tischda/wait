@@ -72,10 +72,12 @@ EXAMPLES:`)
 		flag.Usage()
 		os.Exit(1)
 	}
+	duration := parseDuration(flag.Arg(0))
+	wait(duration, cfg.quiet)
+}
 
-	duration := flag.Arg(0)
-
-	// only numbers or dot, unit missing?
+// Adds "s" suffix if no time unit provided
+func parseDuration(duration string) time.Duration {
 	exp := regexp.MustCompile(`^[\d.]+$`)
 	if exp.FindString(duration) != "" {
 		duration += "s" // seconds
@@ -84,9 +86,5 @@ EXAMPLES:`)
 	if err != nil {
 		log.Fatalln(err)
 	}
-
-	stop := make(chan struct{})
-	go watchKeypress(stop)
-	wait(timeDuration, cfg.quiet, stop)
-
+	return timeDuration
 }

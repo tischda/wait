@@ -27,8 +27,17 @@ var bar = []string{
 	"\r[\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591] 100%",
 }
 
-// wait until duration elapsed or a key (line) pressed
-func wait(duration time.Duration, quiet bool, stop <-chan struct{}) {
+// wait until duration elapsed or a key is pressed on terminal
+func wait(duration time.Duration, quiet bool) {
+
+	stop := make(chan struct{})
+	fd := int(os.Stdin.Fd())
+	if term.IsTerminal(fd) {
+		fmt.Printf("Waiting for %s, press a key to continue ...\n", duration)
+		go watchKeypress(stop)
+	} else {
+		fmt.Printf("Waiting for %s ...\n", duration)
+	}
 
 	if quiet {
 		select {
@@ -39,7 +48,7 @@ func wait(duration time.Duration, quiet bool, stop <-chan struct{}) {
 		}
 	}
 
-	// progress mode
+	// progress bar mode
 	interval := duration / time.Duration(TICKS)
 	hide_cursor()
 	defer show_cursor()
@@ -60,15 +69,19 @@ func wait(duration time.Duration, quiet bool, stop <-chan struct{}) {
 func watchKeypress(stop chan struct{}) {
 	oldState, err := term.MakeRaw(int(os.Stdin.Fd()))
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("term.MakeRaw():", err)
 		return
 	}
-	defer term.Restore(int(os.Stdin.Fd()), oldState)
+	defer func() {
+		if err := term.Restore(int(os.Stdin.Fd()), oldState); err != nil {
+			fmt.Println("term.Restore():", err)
+		}
+	}()
 
 	b := make([]byte, 1)
 	_, err = os.Stdin.Read(b)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("os.Stdin.Read():", err)
 		return
 	}
 	select {
