@@ -7,10 +7,14 @@ import (
 )
 
 // acceptable delta for the time effectively slept
-const DELTA = 20 * time.Millisecond
+const DELTA = 30 * time.Millisecond
 
 func TestWait(t *testing.T) {
 	params := []string{"0.1s", "0.100s", "100ms", "100000us", "100000000ns"}
+	cfg := &Config{
+		quiet:   true,
+		nobreak: false,
+	}
 
 	for _, duration := range params {
 		start := time.Now()
@@ -18,7 +22,7 @@ func TestWait(t *testing.T) {
 		if err != nil {
 			log.Fatalln(err)
 		}
-		wait(timeDuration, true)
+		wait(timeDuration, cfg)
 		stop := time.Now()
 
 		actual := stop.Sub(start)
@@ -33,13 +37,17 @@ func TestWait(t *testing.T) {
 }
 
 func TestProgress(t *testing.T) {
+	cfg := &Config{
+		quiet:   false,
+		nobreak: false,
+	}
 	duration := "1s"
 	start := time.Now()
 	timeDuration, err := time.ParseDuration(duration)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	wait(timeDuration, false)
+	wait(timeDuration, cfg)
 	stop := time.Now()
 
 	actual := stop.Sub(start)

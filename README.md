@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/github/license/tischda/wait)](/LICENSE)
 [![Release](https://img.shields.io/github/release/tischda/wait.svg)](https://github.com/tischda/wait/releases/latest)
 
-Wait for specified duration or until key pressed.
+Wait for specified duration or until key is pressed.
 
 ## Install
 
@@ -21,6 +21,8 @@ Usage: wait [OPTIONS] duration
 Waits for specified duration or until key pressed.
 
 OPTIONS:
+  -n, --nobreak
+          ignore key presses and wait specified time
   -q, --quiet
           suppress non-error output
   -?, --help
@@ -31,7 +33,8 @@ OPTIONS:
 EXAMPLES:
 
   $ wait 3s
-    [░░░░░░░░░░] 100%
+  Waiting for 3s, press a key to continue ...
+  [░░░░░░░░░░] 100%
 ~~~
 
 Will sleep for 3s (see [ParseDuration](http://golang.org/pkg/time/#ParseDuration) for time formats).
@@ -44,3 +47,4 @@ Accuracy for actual duration is not great, but the delta should be under 20ms.
 * https://github.com/tianon/gosleep
 * https://github.com/cheggaaa/pb
 * https://github.com/gosuri/uiprogress
+* C:\Windows\System32\timeout.exe

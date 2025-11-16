@@ -19,6 +19,7 @@ var (
 
 // flags
 type Config struct {
+	nobreak bool
 	quiet   bool
 	help    bool
 	version bool
@@ -26,6 +27,8 @@ type Config struct {
 
 func initFlags() *Config {
 	cfg := &Config{}
+	flag.BoolVar(&cfg.nobreak, "n", false, "")
+	flag.BoolVar(&cfg.nobreak, "nobreak", false, "ignore key presses and wait specified time")
 	flag.BoolVar(&cfg.quiet, "q", false, "")
 	flag.BoolVar(&cfg.quiet, "quiet", false, "suppress non-error output")
 	flag.BoolVar(&cfg.help, "?", false, "")
@@ -44,6 +47,8 @@ func main() {
 Waits for specified duration or until key pressed.
 
 OPTIONS:
+  -n, --nobreak
+          ignore key presses and wait specified time
   -q, --quiet
           suppress non-error output
   -?, --help
@@ -54,7 +59,8 @@ OPTIONS:
 EXAMPLES:`)
 
 		fmt.Fprintln(os.Stderr, "\n  $ "+name+` 3s
-    [░░░░░░░░░░] 100%`)
+  Waiting for 3s, press a key to continue ...
+  [░░░░░░░░░░] 100%`)
 	}
 	flag.Parse()
 
@@ -73,7 +79,7 @@ EXAMPLES:`)
 		os.Exit(1)
 	}
 	duration := parseDuration(flag.Arg(0))
-	wait(duration, cfg.quiet)
+	wait(duration, cfg)
 }
 
 // Adds "s" suffix if no time unit provided

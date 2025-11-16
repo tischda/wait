@@ -28,18 +28,18 @@ var bar = []string{
 }
 
 // wait until duration elapsed or a key is pressed on terminal
-func wait(duration time.Duration, quiet bool) {
+func wait(duration time.Duration, cfg *Config) {
 
 	stop := make(chan struct{})
 	fd := int(os.Stdin.Fd())
-	if term.IsTerminal(fd) {
+	if term.IsTerminal(fd) && !cfg.nobreak {
 		fmt.Printf("Waiting for %s, press a key to continue ...\n", duration)
 		go watchKeypress(stop)
 	} else {
 		fmt.Printf("Waiting for %s ...\n", duration)
 	}
 
-	if quiet {
+	if cfg.quiet {
 		select {
 		case <-time.After(duration):
 			return
