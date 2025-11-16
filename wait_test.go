@@ -18,7 +18,8 @@ func TestSleep(t *testing.T) {
 		if err != nil {
 			log.Fatalln(err)
 		}
-		wait(timeDuration, true)
+		s := make(chan struct{})
+		wait(timeDuration, true, s)
 		stop := time.Now()
 
 		actual := stop.Sub(start)

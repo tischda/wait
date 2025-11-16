@@ -11,10 +11,24 @@ import (
 // number of progress bar increments
 var TICKS = len(bar)
 
+// Dumb implementation of a progress bar...
+// see https://en.wikipedia.org/wiki/Block_Elements for unicode block elements
+var bar = []string{
+	"\r[          ]   0%",
+	"\r[\u2591         ]  10%",
+	"\r[\u2591\u2591        ]  20%",
+	"\r[\u2591\u2591\u2591       ]  30%",
+	"\r[\u2591\u2591\u2591\u2591      ]  40%",
+	"\r[\u2591\u2591\u2591\u2591\u2591     ]  50%",
+	"\r[\u2591\u2591\u2591\u2591\u2591\u2591    ]  60%",
+	"\r[\u2591\u2591\u2591\u2591\u2591\u2591\u2591   ]  70%",
+	"\r[\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591  ]  80%",
+	"\r[\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591 ]  90%",
+	"\r[\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591] 100%",
+}
+
 // wait until duration elapsed or a key (line) pressed
-func wait(duration time.Duration, quiet bool) {
-	stop := make(chan struct{})
-	go watchKeypress(stop)
+func wait(duration time.Duration, quiet bool, stop <-chan struct{}) {
 
 	if quiet {
 		select {
@@ -26,33 +40,19 @@ func wait(duration time.Duration, quiet bool) {
 	}
 
 	// progress mode
-	full := show_progress(duration, stop)
-
-	if full {
-		// ensure final 100% with newline
-		fmt.Println(bar[TICKS-1])
-	} else {
-		// interrupted: move to next line
-		fmt.Println()
-	}
-}
-
-// prints the progress bar as time is passing by; stops early if interrupted.
-// done sends true if full duration elapsed, false if interrupted.
-func show_progress(d time.Duration, stop <-chan struct{}) bool {
-	interval := d / time.Duration(TICKS)
+	interval := duration / time.Duration(TICKS)
 	hide_cursor()
 	defer show_cursor()
+
 	for i := 0; i < TICKS; i++ {
+		fmt.Print(bar[i])
 		select {
+		case <-time.After(interval):
+			// proceed to next tick
 		case <-stop:
-			return false
-		default:
-			fmt.Print(bar[i])
-			time.Sleep(interval)
+			return
 		}
 	}
-	return true
 }
 
 // watchKeypress waits for any input by switch stdin into 'raw' mode
