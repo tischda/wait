@@ -10,7 +10,7 @@ import (
 const DELTA = 30 * time.Millisecond
 
 func TestWait(t *testing.T) {
-	params := []string{"0.1s", "0.100s", "100ms", "100000us", "100000000ns"}
+	params := []string{"0.9s", "0.900s", "900ms", "900000us", "900000000ns"}
 	cfg := &Config{
 		quiet:      true,
 		noprogress: true,
@@ -26,7 +26,7 @@ func TestWait(t *testing.T) {
 		stop := time.Now()
 
 		actual := stop.Sub(start)
-		expected, err := time.ParseDuration("0.1s")
+		expected, err := time.ParseDuration("0.9s")
 		if err != nil {
 			log.Fatalln(err)
 		}
