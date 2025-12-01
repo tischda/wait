@@ -90,10 +90,6 @@ EXAMPLES:`)
 
 	duration := parseDuration(flag.Arg(0))
 	wait(duration, cfg)
-
-	if !cfg.noprogress {
-		fmt.Printf("\n")
-	}
 }
 
 // Adds "s" suffix if no time unit provided
