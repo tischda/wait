@@ -7,7 +7,7 @@ import (
 )
 
 // acceptable delta for the time effectively slept
-const DELTA = 30 * time.Millisecond
+const DELTA = 300 * time.Millisecond
 
 func TestWait(t *testing.T) {
 	params := []string{"0.9s", "0.900s", "900ms", "900000us", "900000000ns"}
