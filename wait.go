@@ -45,7 +45,6 @@ func wait(duration time.Duration, cfg *Config) {
 			return
 		}
 		defer func() {
-			fmt.Println("Restoring term")
 			if err := term.Restore(int(os.Stdin.Fd()), oldState); err != nil {
 				fmt.Println("term.Restore():", err)
 			}
