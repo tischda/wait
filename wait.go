@@ -45,10 +45,10 @@ func wait(duration time.Duration, cfg *Config) {
 			return
 		}
 		defer func() {
-
 			if err := term.Restore(int(os.Stdin.Fd()), oldState); err != nil {
 				fmt.Println("term.Restore():", err)
 			}
+			// last line of output must end with a newline
 			fmt.Println()
 		}()
 
@@ -92,7 +92,6 @@ func wait(duration time.Duration, cfg *Config) {
 // watchKeypress waits for any input by switch stdin into 'raw' mode
 // cf. https://stackoverflow.com/questions/15159118/read-a-character-from-standard-input-in-go-without-pressing-enter
 func watchKeypress(stop chan struct{}) {
-
 	b := make([]byte, 1)
 	_, err := os.Stdin.Read(b)
 	if err != nil {
