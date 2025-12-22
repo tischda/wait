@@ -24,7 +24,7 @@ var bar = []string{
 	"\r[\u2591\u2591\u2591\u2591\u2591\u2591\u2591   ]  70%",
 	"\r[\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591  ]  80%",
 	"\r[\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591 ]  90%",
-	"\r[\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591] 100%\n",
+	"\r[\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591] 100%",
 }
 
 // wait until duration elapsed or a key is pressed on terminal
@@ -81,12 +81,10 @@ func wait(duration time.Duration, cfg *Config) {
 		case <-time.After(interval):
 			// proceed to next tick
 		case <-stop:
-			if i < 10 {
-				fmt.Println()
-			}
 			return
 		}
 	}
+	fmt.Println()
 }
 
 // watchKeypress waits for any input by switch stdin into 'raw' mode
