@@ -54,7 +54,6 @@ func wait(duration time.Duration, cfg *Config) {
 				fmt.Println("term.Restore():", err)
 			}
 		}()
-
 		go watchKeypress(stop)
 	} else if !cfg.quiet {
 		fmt.Printf("Waiting for %s ...\n", duration)
@@ -73,9 +72,11 @@ func wait(duration time.Duration, cfg *Config) {
 	// with progress bar
 	interval := duration / time.Duration(TICKS)
 
+	// Windows requires this to support vt100 escape codes
 	cleanup := enableVirtualTerminalProcessing()
 	defer cleanup()
 
+	// hide cursor while showing progress bar
 	hide_cursor()
 	defer show_cursor()
 
