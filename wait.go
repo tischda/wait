@@ -53,6 +53,12 @@ func wait(duration time.Duration, cfg *Config) {
 	// progress bar mode
 	interval := duration / time.Duration(TICKS)
 
+	cleanup := enableVirtualTerminalProcessing()
+	defer cleanup()
+
+	hide_cursor()
+	defer show_cursor()
+
 	for i := 0; i < TICKS; i++ {
 		fmt.Print(bar[i])
 		select {
@@ -75,10 +81,8 @@ func watchKeypress(stop chan struct{}) {
 		fmt.Println("term.MakeRaw():", err)
 		return
 	}
-	hide_cursor()
 
 	defer func() {
-		show_cursor()
 		if err := term.Restore(int(os.Stdin.Fd()), oldState); err != nil {
 			fmt.Println("term.Restore():", err)
 		}

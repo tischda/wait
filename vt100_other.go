@@ -2,6 +2,6 @@
 
 package main
 
-func enableVirtualTerminalProcessing() (func(), error) {
-	return func() {}, nil
+func enableVirtualTerminalProcessing() func() {
+	return func() {}
 }
