@@ -20,11 +20,10 @@ func enableVirtualTerminalProcessing() func() {
 
 	newMode := originalMode | windows.ENABLE_VIRTUAL_TERMINAL_PROCESSING
 	if err := windows.SetConsoleMode(stdout, newMode); err != nil {
-		// may not be a terminal, ignore error
 		return func() {}
 	}
 
 	return func() {
-		windows.SetConsoleMode(stdout, originalMode)
+		windows.SetConsoleMode(stdout, originalMode) //nolint:errcheck
 	}
 }
