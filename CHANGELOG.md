@@ -1,6 +1,6 @@
 # Changelog
 
-## [v1.4.0] - 16 November 2025
+## [v1.4.1] - 22 December 2025
 
 * Renamed from `gosleep` to `wait` (to avoid confusion with power state)
 * Interrupt on key press

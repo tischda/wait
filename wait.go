@@ -30,9 +30,6 @@ var bar = []string{
 // wait until duration elapsed or a key is pressed on terminal
 func wait(duration time.Duration, cfg *Config) {
 
-	var oldState *term.State
-	var err error
-
 	// last line of output must end with a newline
 	if !cfg.quiet && !cfg.noprogress {
 		defer fmt.Println()
@@ -44,16 +41,10 @@ func wait(duration time.Duration, cfg *Config) {
 		if !cfg.quiet {
 			fmt.Printf("Waiting for %s, press a key to continue ...\n", duration)
 		}
-		oldState, err = term.MakeRaw(int(os.Stdin.Fd()))
-		if err != nil {
-			fmt.Println("term.MakeRaw():", err)
-			return
-		}
-		defer func() {
-			if err := term.Restore(int(os.Stdin.Fd()), oldState); err != nil {
-				fmt.Println("term.Restore():", err)
-			}
-		}()
+		// set terminal to raw mode to capture key presses
+		restore := setTerminalRawMode()
+		defer restore()
+
 		go watchKeypress(stop)
 	} else if !cfg.quiet {
 		fmt.Printf("Waiting for %s ...\n", duration)
@@ -87,6 +78,20 @@ func wait(duration time.Duration, cfg *Config) {
 			// proceed to next tick
 		case <-stop:
 			return
+		}
+	}
+}
+
+// set terminal to raw mode to capture key presses
+func setTerminalRawMode() func() {
+	oldState, err := term.MakeRaw(int(os.Stdin.Fd()))
+	if err != nil {
+		fmt.Println("term.MakeRaw():", err)
+		return func() {}
+	}
+	return func() {
+		if err := term.Restore(int(os.Stdin.Fd()), oldState); err != nil {
+			fmt.Println("term.Restore():", err)
 		}
 	}
 }
