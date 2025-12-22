@@ -30,12 +30,27 @@ var bar = []string{
 // wait until duration elapsed or a key is pressed on terminal
 func wait(duration time.Duration, cfg *Config) {
 
+	var oldState *term.State
+	var err error
+
 	stop := make(chan struct{})
 	fd := int(os.Stdin.Fd())
 	if term.IsTerminal(fd) && !cfg.nobreak {
 		if !cfg.quiet {
 			fmt.Printf("Waiting for %s, press a key to continue ...\n", duration)
 		}
+		oldState, err = term.MakeRaw(int(os.Stdin.Fd()))
+		if err != nil {
+			fmt.Println("term.MakeRaw():", err)
+			return
+		}
+		defer func() {
+			fmt.Println("Restoring term")
+			if err := term.Restore(int(os.Stdin.Fd()), oldState); err != nil {
+				fmt.Println("term.Restore():", err)
+			}
+		}()
+
 		go watchKeypress(stop)
 	} else if !cfg.quiet {
 		fmt.Printf("Waiting for %s ...\n", duration)
@@ -76,20 +91,9 @@ func wait(duration time.Duration, cfg *Config) {
 // watchKeypress waits for any input by switch stdin into 'raw' mode
 // cf. https://stackoverflow.com/questions/15159118/read-a-character-from-standard-input-in-go-without-pressing-enter
 func watchKeypress(stop chan struct{}) {
-	oldState, err := term.MakeRaw(int(os.Stdin.Fd()))
-	if err != nil {
-		fmt.Println("term.MakeRaw():", err)
-		return
-	}
-
-	defer func() {
-		if err := term.Restore(int(os.Stdin.Fd()), oldState); err != nil {
-			fmt.Println("term.Restore():", err)
-		}
-	}()
 
 	b := make([]byte, 1)
-	_, err = os.Stdin.Read(b)
+	_, err := os.Stdin.Read(b)
 	if err != nil {
 		fmt.Println("os.Stdin.Read():", err)
 		return
