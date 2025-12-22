@@ -52,8 +52,6 @@ func wait(duration time.Duration, cfg *Config) {
 
 	// progress bar mode
 	interval := duration / time.Duration(TICKS)
-	hide_cursor()
-	defer show_cursor()
 
 	for i := 0; i < TICKS; i++ {
 		fmt.Print(bar[i])
@@ -77,7 +75,10 @@ func watchKeypress(stop chan struct{}) {
 		fmt.Println("term.MakeRaw():", err)
 		return
 	}
+	hide_cursor()
+
 	defer func() {
+		show_cursor()
 		if err := term.Restore(int(os.Stdin.Fd()), oldState); err != nil {
 			fmt.Println("term.Restore():", err)
 		}
@@ -94,4 +95,12 @@ func watchKeypress(stop chan struct{}) {
 	default:
 		close(stop)
 	}
+}
+
+func hide_cursor() {
+	fmt.Print("\033[?25l")
+}
+
+func show_cursor() {
+	fmt.Print("\033[?25h")
 }

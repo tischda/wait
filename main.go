@@ -43,6 +43,12 @@ func initFlags() *Config {
 
 func main() {
 	log.SetFlags(0)
+	if cleanup, err := enableVirtualTerminalProcessing(); err != nil {
+		// on error, vt100 escape codes will not work
+		log.Println(err)
+	} else {
+		defer cleanup()
+	}
 	cfg := initFlags()
 	flag.Usage = func() {
 		fmt.Fprintln(os.Stderr, "Usage: "+name+` [OPTIONS] duration
