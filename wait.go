@@ -45,9 +45,11 @@ func wait(duration time.Duration, cfg *Config) {
 			return
 		}
 		defer func() {
+
 			if err := term.Restore(int(os.Stdin.Fd()), oldState); err != nil {
 				fmt.Println("term.Restore():", err)
 			}
+			fmt.Println()
 		}()
 
 		go watchKeypress(stop)
