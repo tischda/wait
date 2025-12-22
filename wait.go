@@ -33,6 +33,11 @@ func wait(duration time.Duration, cfg *Config) {
 	var oldState *term.State
 	var err error
 
+	// last line of output must end with a newline
+	if !cfg.quiet && !cfg.noprogress {
+		defer fmt.Println()
+	}
+
 	stop := make(chan struct{})
 	fd := int(os.Stdin.Fd())
 	if term.IsTerminal(fd) && !cfg.nobreak {
@@ -48,8 +53,6 @@ func wait(duration time.Duration, cfg *Config) {
 			if err := term.Restore(int(os.Stdin.Fd()), oldState); err != nil {
 				fmt.Println("term.Restore():", err)
 			}
-			// last line of output must end with a newline
-			fmt.Println()
 		}()
 
 		go watchKeypress(stop)
@@ -57,6 +60,7 @@ func wait(duration time.Duration, cfg *Config) {
 		fmt.Printf("Waiting for %s ...\n", duration)
 	}
 
+	// no progress bar
 	if cfg.noprogress {
 		select {
 		case <-time.After(duration):
@@ -66,7 +70,7 @@ func wait(duration time.Duration, cfg *Config) {
 		}
 	}
 
-	// progress bar mode
+	// with progress bar
 	interval := duration / time.Duration(TICKS)
 
 	cleanup := enableVirtualTerminalProcessing()
@@ -84,10 +88,9 @@ func wait(duration time.Duration, cfg *Config) {
 			return
 		}
 	}
-	fmt.Println()
 }
 
-// watchKeypress waits for any input by switch stdin into 'raw' mode
+// watchKeypress waits for key input (stdin must be in 'raw' mode)
 // cf. https://stackoverflow.com/questions/15159118/read-a-character-from-standard-input-in-go-without-pressing-enter
 func watchKeypress(stop chan struct{}) {
 	b := make([]byte, 1)

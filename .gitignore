@@ -4,3 +4,4 @@ dist/
 releaseinfo
 resource*.syso
 fast-compile.cmd
+wait
