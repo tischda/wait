@@ -2,7 +2,7 @@
 [![Test Status](https://github.com/tischda/wait/actions/workflows/test.yml/badge.svg)](https://github.com/tischda/wait/actions/workflows/test.yml)
 [![Coverage Status](https://coveralls.io/repos/tischda/wait/badge.svg)](https://coveralls.io/r/tischda/wait)
 [![Linter Status](https://github.com/tischda/wait/actions/workflows/linter.yml/badge.svg)](https://github.com/tischda/wait/actions/workflows/linter.yml)
-[![License](https://img.shields.io/github/license/tischda/wait)](/LICENSE)
+[![License](https://img.shields.io/github/license/tischda/wait.svg)](/LICENSE)
 [![Release](https://img.shields.io/github/release/tischda/wait.svg)](https://github.com/tischda/wait/releases/latest)
 
 Wait for specified duration or until key is pressed.
